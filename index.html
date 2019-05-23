@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Scribbles of a nerd-wannabe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Scribbles of a nerd-wannabe">
+<meta property="og:url" content="https://i-bar.github.io/index.html">
+<meta property="og:site_name" content="Scribbles of a nerd-wannabe">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scribbles of a nerd-wannabe">
+  
+    <link rel="alternate" href="/atom.xml" title="Scribbles of a nerd-wannabe" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Scribbles of a nerd-wannabe</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://i-bar.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-http-how-to" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/14/http-how-to/" class="article-date">
+  <time datetime="2019-05-14T08:14:30.000Z" itemprop="datePublished">2019-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/14/http-how-to/">How to secure the transport layer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Below are some travel notes from the path towards making a node.js express app only be accessible via https.<br>Hopefully some of the signs on the way are generic enough to also be used with other technologies.</p>
+<p>The following steps need to be taken:</p>
+<ol>
+<li>Add support for https;</li>
+<li>Redirect all http to https;</li>
+<li>Extra (but mandatory) measures:<ul>
+<li>add the <code>hsts</code> header and</li>
+<li>mark all cookies as <code>secure</code>.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="Step-1-Add-support-for-https-to-our-service-s"><a href="#Step-1-Add-support-for-https-to-our-service-s" class="headerlink" title="Step 1. Add support for https to our service(s)"></a>Step 1. Add support for https to our service(s)</h2><p>This actually translates to ‘generate and use an SSL certificate’.</p>
+<h3 id="The-easy-way-use-the-default-SSL-certificate-on-your-PaaS-if-any"><a href="#The-easy-way-use-the-default-SSL-certificate-on-your-PaaS-if-any" class="headerlink" title="The easy way: use the default SSL certificate on your PaaS (if any)"></a>The easy way: use the default SSL certificate on your PaaS (if any)</h3><p>Depending on where the app is deployed, SSL support might come out of the box or simply translate to a small setting.<br>That is, our app might be accessible via both http and https without us needing to make any change to it - yay! :D</p>
+<p>E.g., on Heroku:</p>
+<ul>
+<li>Free dynos have SSL enabled by default, with a default wildcard certificate (<code>\*.herokuapp.com</code>): see <a href="https://stackoverflow.com/a/22751658/777833" target="_blank" rel="noopener">this stackoverflow answer</a> for more details.</li>
+<li>A custom SSL certificate can only be added to paid dynos: see the <a href="https://devcenter.heroku.com/articles/ssl" target="_blank" rel="noopener">heroky SSL docs</a>.</li>
+</ul>
+<h3 id="The-hard-and-recommended-way"><a href="#The-hard-and-recommended-way" class="headerlink" title="The hard (and recommended?) way:"></a>The hard (and recommended?) way:</h3><p>a) Generate a custom SSL certificate;<br>b) Trust the generated certificate on our host;<br>c) Use the certificate in our server.</p>
+<h4 id="a-Generate-a-custom-SSL-certificate"><a href="#a-Generate-a-custom-SSL-certificate" class="headerlink" title="a. Generate a custom SSL certificate"></a>a. Generate a custom SSL certificate</h4><p>This can be achieved in one of the following ways:</p>
+<ol>
+<li>Use a <strong>self-signed</strong> certificate (e.g. openssl)<ul>
+<li>Pros: fast, nothing to install, useful for testing / development purposes.</li>
+<li>Cons: browsers won’t trust it and will display the ‘untrusted’ warning. (more details <a href="http://answers.ssl.com/2899/can-i-create-my-own-ssl-certificate" target="_blank" rel="noopener">here</a>)</li>
+</ul>
+</li>
+<li>Use a <strong>free</strong> Certificate Authority (e.g. <a href="https://letsencrypt.org/" target="_blank" rel="noopener">Let’s Encrypt</a>):<ul>
+<li>Pros: well… free. And recognized by browsers ;).</li>
+<li>Cons: has to be renewed every 3 months. However, “renewal is as easy as running one simple command, which we can assign to a cron” (<a href="https://www.sitepoint.com/how-to-use-ssltls-with-node-js/" target="_blank" rel="noopener">source</a>)</li>
+</ul>
+</li>
+<li>Pay a <strong>trusted CA</strong>.<ul>
+<li>Pros: no cons of the above :).</li>
+<li>Cons: not free. However, not <em>extremely</em> costly either..</li>
+</ul>
+</li>
+</ol>
+<p><strong><em>Important note: where to store the certificates?</em></strong><br>Store the certificates in a secure place (e.g. behind a secret manager like keepass) and definitely do not store them in publicly accessible places like github. See <a href="https://serverfault.com/a/648364/432012" target="_blank" rel="noopener">this answer</a> for more details.</p>
+<p><strong>Example</strong> of generating a localhost self-signed certificate:</p>
+<ul>
+<li>inspired from <a href="https://letsencrypt.org/docs/certificates-for-localhost/" target="_blank" rel="noopener">Let’s Encrypt</a></li>
+<li>the following command will create two files, <code>localhost.key</code> and <code>localhost.crt</code>:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -out localhost.crt -keyout localhost.key \</span><br><span class="line"> -newkey rsa:2048 -nodes -sha256 \</span><br><span class="line"> -subj &apos;/CN=localhost&apos; -extensions EXT -config &lt;( \</span><br><span class="line">  printf &quot;[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth&quot;)</span><br></pre></td></tr></table></figure>
+<h4 id="b-Trust-the-freshly-generated-SSL-certificate"><a href="#b-Trust-the-freshly-generated-SSL-certificate" class="headerlink" title="b. Trust the freshly generated SSL certificate"></a>b. Trust the freshly generated SSL certificate</h4><p><strong>Example</strong> of trusting the above generated certificate on the localhost, taken from <a href="https://derflounder.wordpress.com/2011/03/13/adding-new-trusted-root-certificates-to-system-keychain/" target="_blank" rel="noopener">this blog</a>:<br><code>sudo security add-trusted-cert -d -r trustRoot -k &quot;/Library/Keychains/System.keychain&quot; &quot;./localhost.crt&quot;</code></p>
+<h4 id="c-Use-the-SSL-certificate-in-the-server-app"><a href="#c-Use-the-SSL-certificate-in-the-server-app" class="headerlink" title="c. Use the SSL certificate in the server app"></a>c. Use the SSL certificate in the server app</h4><p><strong>Example</strong> of using the above generated localhost certificate in our server app:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var https = require(&quot;https&quot;);</span><br><span class="line">var fs = require(&quot;fs&quot;);</span><br><span class="line"></span><br><span class="line">[...]</span><br><span class="line"></span><br><span class="line">const sslOptions = &#123;</span><br><span class="line">  key: fs.readFileSync(&quot;localhost.key&quot;),</span><br><span class="line">  cert: fs.readFileSync(&quot;localhost.crt&quot;),</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const server = https.createServer(sslOptions, app);</span><br><span class="line">server.listen(process.env.PORT || 3001, function() &#123;</span><br><span class="line">  console.log(`Listening on port $&#123;server.address().port&#125;...`);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="Step-2-Redirect-all-http-to-https"><a href="#Step-2-Redirect-all-http-to-https" class="headerlink" title="Step 2. Redirect all http to https:"></a>Step 2. Redirect all <code>http</code> to <code>https</code>:</h2><p>Just in order to avoid the 404 pages when a user (accidently, not for attacking reasons, of course…) tries to access the app via http, we also need to support http requests - and redirect them to https.</p>
+<p>We would need a middle-layer to intercept all requests, verify if they come via an unencrypted channel and if so, redirect them. That can be echieved in two ways:</p>
+<ul>
+<li><p>By using an already implemented middle layer.<br>The most popular among the <a href="https://www.npmjs.com/search?q=express%20https&amp;ranking=maintenance" target="_blank" rel="noopener">currently available npm packages</a> that do that is <a href="https://www.npmjs.com/package/express-http-to-https" target="_blank" rel="noopener">express-http-to-https</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var redirectToHTTPS = require(&quot;express-http-to-https&quot;).redirectToHTTPS;</span><br><span class="line">app.use(redirectToHTTPS([], [], 301));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Pros: code is clean(-ish… not really crazy about it). Would count on the package to be careful to do updates.</li>
+<li>Cons: actually didn’t find any package recent enough or that seems to be kept up to date.</li>
+</ul>
+</li>
+<li><p>By manually implementing a middle layer:<br>Because we are using Heroku, we need to verify the <code>x-forwarded-proto</code> instead of only the req.secure flag.<br>(see the <a href="https://help.heroku.com/J2R1S4T8/can-heroku-force-an-application-to-use-ssl-tls" target="_blank" rel="noopener">Heroku docs</a> for more details)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">app.use(function(req, res, next) &#123;</span><br><span class="line">  // x-forwarded-proto because we are behind a load balancer (heroku, in our case)</span><br><span class="line">  if (!req.secure &amp;&amp; req.get(&quot;x-forwarded-proto&quot;) !== &quot;https&quot;) &#123;</span><br><span class="line">    // request was via http, so redirect to https</span><br><span class="line">    res.redirect(&quot;https://&quot; + req.headers.host + req.url);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    // request was via https, so do no special handling</span><br><span class="line">    next();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong><em>TODO</em></strong>: The x-forwarded-proto might be unsecure, according to both <a href="https://devcenter.heroku.com/articles/http-routing#heroku-headers" target="_blank" rel="noopener">heroku docs</a> and <a href="http://expressjs.com/en/4x/api.html#app.set" target="_blank" rel="noopener">express docs</a>. Find another way to do the forwarding…</p>
+<h3 id="Exception-on-localhost-we-need-to-create-two-servers"><a href="#Exception-on-localhost-we-need-to-create-two-servers" class="headerlink" title="Exception: on localhost we need to create two servers :/"></a>Exception: on localhost we need to create two servers :/</h3><p>Even if when deploying to Heroku creating one server is enough and it will be accessible via both http and https, on localhost we need to create two servers:</p>
+<ul>
+<li>one that listens to the :80 port for http requests (and redirects them to https) and</li>
+<li>one that listens on the :443 port for https requests.</li>
+</ul>
+<p><strong>TODO</strong> There’s gotta be a common way for localhost and cloud-deployed app to listen to both and redirect http to https… just that I haven’t found it (yet) :/…</p>
+<p><strong><code>Code</code> sample</strong> for localhost:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">const httpsServer = https.createServer(sslOptions, app);</span><br><span class="line">httpsServer.listen(443, function() &#123;</span><br><span class="line">  console.log(`Listening on port $&#123;httpsServer.address().port&#125;...`);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// Also listen on http and redirect from all to https</span><br><span class="line">var httpServer = require(&quot;http&quot;);</span><br><span class="line">httpServer</span><br><span class="line">  .createServer(function(req, res) &#123;</span><br><span class="line">    res.writeHead(301, &#123;</span><br><span class="line">      Location: &quot;https://&quot; + req.headers[&quot;host&quot;] + req.url,</span><br><span class="line">    &#125;);</span><br><span class="line">    res.end();</span><br><span class="line">  &#125;)</span><br><span class="line">  .listen(80);</span><br></pre></td></tr></table></figure>
+<h2 id="Step-3-Extra-security-measures"><a href="#Step-3-Extra-security-measures" class="headerlink" title="Step 3. Extra security measures"></a>Step 3. Extra security measures</h2><p>… because no app is secure enough… because hackers are (too) creative…</p>
+<h3 id="Step-3-1-Use-the-HSTS-header"><a href="#Step-3-1-Use-the-HSTS-header" class="headerlink" title="Step 3.1. Use the HSTS header"></a>Step 3.1. Use the HSTS header</h3><p><strong>Why?</strong><br>Scary <a href="https://blog.duszynski.eu/hijacking-browser-tls-traffic-through-client-domain-hooking/" target="_blank" rel="noopener">example of an attack</a> that leverages web apps that don’t have hsts enabled.<br>Even one single http request can be a breach.</p>
+<p><strong>How</strong> does it help us?<br>Enabling hsts is only a step towards https-only requests: it will instruct browsers to only use https to access our app <em>in the future</em>. That is, the very first request can still be done via http. But hey… something is better than nothing.<br>A <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank" rel="noopener">nice explanation of HSTS</a> from Mozilla.</p>
+<p><strong><code>Code</code> sample</strong> using the <a href="https://github.com/helmetjs/helmet" target="_blank" rel="noopener">helmet npm package</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var hsts = require(&quot;hsts&quot;);</span><br><span class="line"></span><br><span class="line">app.use(</span><br><span class="line">  hsts(&#123;</span><br><span class="line">    maxAge: 15552000, // 180 days in seconds</span><br><span class="line">  &#125;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="Step-3-2-Use-Secure-cookies"><a href="#Step-3-2-Use-Secure-cookies" class="headerlink" title="Step 3.2. Use Secure cookies"></a>Step 3.2. Use Secure cookies</h3><p><strong>Why?</strong><br>Even if the app runs over https and we redirect all http to https, a user can still send their session id via the cookie over http.</p>
+<p><strong>How</strong> do they fix this?<br>Cookies with the ‘secure’ flag set can only be sent through https.</p>
+<hr>
+<h2 id="Other-hopefully-useful-resources"><a href="#Other-hopefully-useful-resources" class="headerlink" title="Other (hopefully) useful resources"></a>Other (hopefully) useful resources</h2><ul>
+<li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.md" target="_blank" rel="noopener">OWASP cheat sheet for transpor layer protection</a></li>
+<li><a href="http://scottksmith.com/blog/2015/06/15/secure-node-apps-against-owasp-top-10-authentication-and-sessions/" target="_blank" rel="noopener">Secure authentication and sessions for node apps</a></li>
+<li><a href="https://github.com/helmetjs/helmet" target="_blank" rel="noopener">Helmet repo</a> - TODO: use it to add more secure headers;</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://i-bar.github.io/2019/05/14/http-how-to/" data-id="cjw0exl200001zejxcmtyeb6e" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-cookie-jwt-with-reverse-proxy-md" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/" class="article-date">
+  <time datetime="2019-05-10T08:16:39.000Z" itemprop="datePublished">2019-05-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Cookie JWT with Node.js reverse proxy</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Our-problem-was…"><a href="#Our-problem-was…" class="headerlink" title="Our problem was…"></a>Our problem was…</h3><p>… that the server and the client resided on different domains;<br>… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;<br>… and that the browser would block the the cookie sent by the backend, considering it a <a href="https://whatis.techtarget.com/definition/third-party-cookie" target="_blank" rel="noopener">third party cookie</a>.</p>
+<h3 id="What-we-tried-and-didn’t-work"><a href="#What-we-tried-and-didn’t-work" class="headerlink" title="What we tried (and didn’t work)"></a>What we tried (and didn’t work)</h3><ol>
+<li>Setting the cookie <code>domain</code>. Actually, we were deployin to something like <code>fe.herokuapp.com</code> and <code>be.herokuapp.com</code>.<br>Setting the domain to <code>herokuapp.com</code> should actually work (see <a href="https://stackoverflow.com/questions/56019218/inconsistency-in-rfc6265-about-the-cookie-domain-handling" target="_blank" rel="noopener">this question</a>) but didn’t because herokuapp is a <a href="https://publicsuffix.org/list/public_suffix_list.dat" target="_blank" rel="noopener">public suffix</a> and thus <a href="https://mailarchive.ietf.org/arch/msg/http-state/TPAIg769WRpZsQVkKOCFpQNqFmE" target="_blank" rel="noopener">ignored by the browser</a>.</li>
+<li>Adding <code>allowHeaders</code> and <code>exposeHeaders</code> to the <code>cors options</code> on the server, with the following value: <code>[&#39;cookie&#39;, &#39;set-cookie&#39;]</code>;</li>
+<li>Deploying both BE and FE to heroku…<br>? maybe backend.heroku.com and frontend.heroku.com are on the “same domain”?<br>–&gt; Yes. but diferent sub-domains =&gt; cookie still blocked.</li>
+</ol>
+<h3 id="A-possible-sollution-would-be…"><a href="#A-possible-sollution-would-be…" class="headerlink" title="A possible sollution would be…"></a>A possible sollution would be…</h3><p>… to go back to passing the token via header / body and to store it locally on the client side.<br>React seems to protect us against XSS (the vulnerability with storing the token locally).<br>But we are stubborn and really really want to use cookies. Hah.</p>
+<h3 id="So-our-solution-was-to…"><a href="#So-our-solution-was-to…" class="headerlink" title="So our solution was to…"></a>So our solution was to…</h3><p>… use a 3rd service as a reverse-proxy:</p>
+<ol>
+<li>Deploy client to <code>frontend.heroku.com</code>.</li>
+<li>Deploy server to <code>backend.heroku.com</code>.<br><em>N.B.</em> At this point, the cookies sent from the server to the client are blocked.<br>Issue reproduced.</li>
+<li>Use <a href="https://github.com/chimurai/http-proxy-middleware" target="_blank" rel="noopener">http proxy middleware</a> to create a reverse proxy (see code below).</li>
+<li>Deploy the proxy to <code>proxy.heroku.com</code>.</li>
+<li>The following changes need to be done to the existing workflow:<ul>
+<li>The browser will call the proxy (the proxy will redirect the calls to the client);</li>
+<li>The client code will use the proxy as a server (the proxy will also redirect calls to the server);</li>
+<li>The server code will accept the proxy as a client (e.g. for the <code>allow origin</code> cors options).</li>
+</ul>
+</li>
+</ol>
+<p>Cookies are sent and life is beautiful again :).</p>
+<h3 id="Next-steps"><a href="#Next-steps" class="headerlink" title="Next steps"></a>Next steps</h3><ul>
+<li>Use the reverse proxy to enforce tls/ssl usage;</li>
+<li>Use nginx instead of node as a reverse proxy;<ul>
+<li>Why? What are the advantages? (besides learning a bit about nginx)</li>
+</ul>
+</li>
+<li>Avoid deploying 3 apps to heroku:<ul>
+<li>put all 3 inside a docker image; (can-can?)</li>
+<li>only publish the port of the proxy; (how?)</li>
+<li>deploy this docker image to heroku; (?)</li>
+</ul>
+</li>
+<li>Doc with cookie vs. token lessons learned.</li>
+</ul>
+<h3 id="Helpful-resources-along-the-way"><a href="#Helpful-resources-along-the-way" class="headerlink" title="Helpful resources along the way:"></a>Helpful resources along the way:</h3><ul>
+<li><a href="https://tools.ietf.org/html/rfc6265#section-4.1.2.3" target="_blank" rel="noopener">HTTP rfc6265</a></li>
+<li><a href="https://nodejs.org/de/docs/guides/nodejs-docker-webapp/" target="_blank" rel="noopener">Dockerize node app</a></li>
+<li><a href="https://facebook.github.io/create-react-app/docs/deployment#heroku-https-wwwherokucom" target="_blank" rel="noopener">Deploy node app to heroku</a></li>
+<li><a href="https://dzone.com/articles/cookies-vs-tokens-the-definitive-guide" target="_blank" rel="noopener">Cookies vs tokens</a></li>
+<li><a href="https://reactjs.org/docs/introducing-jsx.html#jsx-prevents-injection-attacks" target="_blank" rel="noopener">React protects us against XSS</a> …</li>
+<li><a href="https://stackoverflow.com/questions/33644499/what-does-it-mean-when-they-say-react-is-xss-protected/51852579#51852579" target="_blank" rel="noopener">… but not completely</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw0exl1i0000zejx54pe1n9j" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/14/http-how-to/">How to secure the transport layer</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Cookie JWT with Node.js reverse proxy</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 i-bar<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
