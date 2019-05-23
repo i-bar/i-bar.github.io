@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Google Cloud journey with a Serverless app destination | Scribbles of a nerd-wannabe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="The destination of this journey would have been a serverless application with an architecture similar to this one, but with GCP services instead of AWS. Below are the yay!s and boo!s along the way. Sp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Google Cloud journey with a Serverless app destination">
+<meta property="og:url" content="https://i-bar.github.io/2019/05/14/gcp-journey/index.html">
+<meta property="og:site_name" content="Scribbles of a nerd-wannabe">
+<meta property="og:description" content="The destination of this journey would have been a serverless application with an architecture similar to this one, but with GCP services instead of AWS. Below are the yay!s and boo!s along the way. Sp">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-05-23T08:55:25.962Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Google Cloud journey with a Serverless app destination">
+<meta name="twitter:description" content="The destination of this journey would have been a serverless application with an architecture similar to this one, but with GCP services instead of AWS. Below are the yay!s and boo!s along the way. Sp">
+  
+    <link rel="alternate" href="/atom.xml" title="Scribbles of a nerd-wannabe" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Scribbles of a nerd-wannabe</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://i-bar.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-gcp-journey" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/14/gcp-journey/" class="article-date">
+  <time datetime="2019-05-14T08:14:30.000Z" itemprop="datePublished">2019-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Google Cloud journey with a Serverless app destination
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>The destination of this journey would have been a serverless application with an architecture similar to <a href="https://cdn.patricktriest.com/blog/images/posts/cheap-web-hosting/serverless.png" target="_blank" rel="noopener">this one</a>, but with GCP services instead of AWS.</p>
+<p>Below are the yay!s and boo!s along the way. Spoiler alert: destination was not reached.</p>
+<h3 id="GCP-first-encounter-yaaay"><a href="#GCP-first-encounter-yaaay" class="headerlink" title="GCP first encounter: yaaay!"></a>GCP first encounter: yaaay!</h3><p>The way they do the billing is absolutely awesome!!</p>
+<ul>
+<li>So, with AWS’s Free Tier, if you want to stay on the “free” side, you set a limit and (alas!) they NOTIFY you when you exceed it! :)) That’s all!<br>(I did manage to have some unexpected costs when using the free tier, but tbh with them, when I wrote to them, they returned it to me)</li>
+<li>With MS Azure you can also set some limits, but the services will simply not exceed those - this is what I was hoping for with AWS also…</li>
+<li>With Google Cloud Platform, if you want (need) to use resources that exceed the free limit (which is quite generous, btw: <a href="https://cloud.google.com/free/" target="_blank" rel="noopener">https://cloud.google.com/free/</a>) - you need to enable billing!!<br><a href="https://cloud.google.com/appengine/docs/standard/python/console/#billing" target="_blank" rel="noopener">https://cloud.google.com/appengine/docs/standard/python/console/#billing</a></li>
+</ul>
+<h3 id="GC-NoSQL-database-Firestore-yay"><a href="#GC-NoSQL-database-Firestore-yay" class="headerlink" title="GC NoSQL database: Firestore: yay!"></a>GC NoSQL database: <strong>Firestore</strong>: yay!</h3><ul>
+<li>Easy to learn and use. Code snippets are helpful.<br><a href="https://cloud.google.com/firestore/docs/quickstart-servers" target="_blank" rel="noopener">The how-to from Google</a> was very useful.</li>
+</ul>
+<h3 id="GC-Serverless-Functions-boo"><a href="#GC-Serverless-Functions-boo" class="headerlink" title="GC Serverless: Functions: boo?"></a>GC Serverless: <strong>Functions</strong>: boo?</h3><p>At a first glance not so fun like the AWS Lambdas - there seems to be no way to create the functions in place, we create them on our machines and upload them to GCP… :/ AWS was cooler.<br>– nnope, just needed to go to the ‘console’ thingy.<br><a href="https://cloud.google.com/functions/docs/quickstart-console" target="_blank" rel="noopener">https://cloud.google.com/functions/docs/quickstart-console</a></p>
+<p>Had to enable billing to use them, boo :(…</p>
+<h3 id="GC-Endpoints-gt-GC-Functions-boo"><a href="#GC-Endpoints-gt-GC-Functions-boo" class="headerlink" title="GC Endpoints -&gt; GC Functions: boo!"></a>GC <strong>Endpoints</strong> -&gt; GC Functions: boo!</h3><p>Why is it so difficult to point the Endpoints to my Functions? :(<br><a href="https://cloud.google.com/endpoints/docs/choose-endpoints-option#isnt_supported" target="_blank" rel="noopener">https://cloud.google.com/endpoints/docs/choose-endpoints-option#isnt_supported</a><br><a href="https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions" target="_blank" rel="noopener">https://cloud.google.com/endpoints/docs/openapi/get-started-cloud-functions</a><br><a href="https://cloud.google.com/endpoints/docs/openapi/architecture-overview" target="_blank" rel="noopener">https://cloud.google.com/endpoints/docs/openapi/architecture-overview</a></p>
+<hr>
+<p>Ok, so unfortunately I think I’ll just give it up at this point, it feels like GCP’s components are still work in progress and I think I actually prefer getting my hands dirty with code instead.</p>
+<p>GCP… So long, and thanks for all the fish.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://i-bar.github.io/2019/05/14/gcp-journey/" data-id="cjw0f8p1w000231jxzukwbh2w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/05/14/http-how-to/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          How to secure the transport layer
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Cookie JWT with Node.js reverse proxy</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/14/http-how-to/">How to secure the transport layer</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/14/gcp-journey/">Google Cloud journey with a Serverless app destination</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Cookie JWT with Node.js reverse proxy</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 i-bar<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
