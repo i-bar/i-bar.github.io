@@ -76,7 +76,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Node.js reverse proxy</a>
+      <a class="article-title" href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Cookie JWT with Node.js reverse proxy</a>
     </h1>
   
 
@@ -84,7 +84,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Node-js-reverse-proxy"><a href="#Node-js-reverse-proxy" class="headerlink" title="Node.js reverse proxy"></a>Node.js reverse proxy</h2><h3 id="Our-problem-was…"><a href="#Our-problem-was…" class="headerlink" title="Our problem was…"></a>Our problem was…</h3><p>… that the server and the client resided on different domains;<br>… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;<br>… and that the browser would block the the cookie sent by the backend, considering it a <a href="https://whatis.techtarget.com/definition/third-party-cookie" target="_blank" rel="noopener">third party cookie</a>.</p>
+        <h3 id="Our-problem-was…"><a href="#Our-problem-was…" class="headerlink" title="Our problem was…"></a>Our problem was…</h3><p>… that the server and the client resided on different domains;<br>… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;<br>… and that the browser would block the the cookie sent by the backend, considering it a <a href="https://whatis.techtarget.com/definition/third-party-cookie" target="_blank" rel="noopener">third party cookie</a>.</p>
 <h3 id="What-we-tried-and-didn’t-work"><a href="#What-we-tried-and-didn’t-work" class="headerlink" title="What we tried (and didn’t work)"></a>What we tried (and didn’t work)</h3><ol>
 <li>Setting the cookie <code>domain</code>. Actually, we were deployin to something like <code>fe.herokuapp.com</code> and <code>be.herokuapp.com</code>.<br>Setting the domain to <code>herokuapp.com</code> should actually work (see <a href="https://stackoverflow.com/questions/56019218/inconsistency-in-rfc6265-about-the-cookie-domain-handling" target="_blank" rel="noopener">this question</a>) but didn’t because herokuapp is a <a href="https://publicsuffix.org/list/public_suffix_list.dat" target="_blank" rel="noopener">public suffix</a> and thus <a href="https://mailarchive.ietf.org/arch/msg/http-state/TPAIg769WRpZsQVkKOCFpQNqFmE" target="_blank" rel="noopener">ignored by the browser</a>.</li>
 <li>Adding <code>allowHeaders</code> and <code>exposeHeaders</code> to the <code>cors options</code> on the server, with the following value: <code>[&#39;cookie&#39;, &#39;set-cookie&#39;]</code>;</li>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw0dw37i0000rxjx50fo9md9" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw0dztds0000tdjxcolk5abp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -172,7 +172,7 @@
       <ul>
         
           <li>
-            <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Node.js reverse proxy</a>
+            <a href="/2019/05/10/cookie-jwt-with-reverse-proxy-md/">Cookie JWT with Node.js reverse proxy</a>
           </li>
         
       </ul>
