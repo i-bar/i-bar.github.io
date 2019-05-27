@@ -7,18 +7,18 @@
   
   <title>Cookie JWT with Node.js reverse proxy | Scribbles of a nerd-wannabe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;… and">
+  <meta name="description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage (not v">
 <meta name="keywords" content="JWT,Cookie,Node">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cookie JWT with Node.js reverse proxy">
 <meta property="og:url" content="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/index.html">
 <meta property="og:site_name" content="Scribbles of a nerd-wannabe">
-<meta property="og:description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;… and">
+<meta property="og:description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage (not v">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-23T09:28:25.038Z">
+<meta property="og:updated_time" content="2019-05-27T03:42:56.808Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Cookie JWT with Node.js reverse proxy">
-<meta name="twitter:description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;… and">
+<meta name="twitter:description" content="Our problem was…… that the server and the client resided on different domains;… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage (not v">
   
     <link rel="alternate" href="/atom.xml" title="Scribbles of a nerd-wannabe" type="application/atom+xml">
   
@@ -87,27 +87,31 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="Our-problem-was…"><a href="#Our-problem-was…" class="headerlink" title="Our problem was…"></a>Our problem was…</h3><p>… that the server and the client resided on different domains;<br>… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage;<br>… and that the browser would block the the cookie sent by the backend, considering it a <a href="https://whatis.techtarget.com/definition/third-party-cookie" target="_blank" rel="noopener">third party cookie</a>.</p>
-<h3 id="What-we-tried-and-didn’t-work"><a href="#What-we-tried-and-didn’t-work" class="headerlink" title="What we tried (and didn’t work)"></a>What we tried (and didn’t work)</h3><ol>
-<li>Setting the cookie <code>domain</code>. Actually, we were deployin to something like <code>fe.herokuapp.com</code> and <code>be.herokuapp.com</code>.<br>Setting the domain to <code>herokuapp.com</code> should actually work (see <a href="https://stackoverflow.com/questions/56019218/inconsistency-in-rfc6265-about-the-cookie-domain-handling" target="_blank" rel="noopener">this question</a>) but didn’t because herokuapp is a <a href="https://publicsuffix.org/list/public_suffix_list.dat" target="_blank" rel="noopener">public suffix</a> and thus <a href="https://mailarchive.ietf.org/arch/msg/http-state/TPAIg769WRpZsQVkKOCFpQNqFmE" target="_blank" rel="noopener">ignored by the browser</a>.</li>
+        <h3 id="Our-problem-was…"><a href="#Our-problem-was…" class="headerlink" title="Our problem was…"></a>Our problem was…</h3><p>… that the server and the client resided on different domains;<br>… and that we wanted to do the authentication via cookies, in order to avoid storing the token in the local storage (not very sure anymore about this, but still);<br>… and that the browser would block the the cookie sent by the backend, considering it a <a href="https://whatis.techtarget.com/definition/third-party-cookie" target="_blank" rel="noopener">third party cookie</a>.</p>
+<h3 id="What-we-tried-and-didn’t-work-cookie-domain-and-set-cookie-header-options"><a href="#What-we-tried-and-didn’t-work-cookie-domain-and-set-cookie-header-options" class="headerlink" title="What we tried (and didn’t work): cookie domain and set-cookie header options"></a>What we tried (and didn’t work): cookie <code>domain</code> and <code>set-cookie</code> header options</h3><ol>
+<li>Deploying both BE and FE to the same PaaS (Heroku)…<br>? maybe <code>backend.heroku.com</code> and <code>frontend.heroku.com</code> are on the “same domain”?<br>–&gt; Yes. but diferent sub-domains =&gt; cookie still blocked.</li>
+<li>Setting the cookie <code>domain</code>.<br>Actually, setting the domain to <code>herokuapp.com</code> should work (see <a href="https://stackoverflow.com/questions/56019218/inconsistency-in-rfc6265-about-the-cookie-domain-handling" target="_blank" rel="noopener">this question</a>) but didn’t because herokuapp is a <a href="https://publicsuffix.org/list/public_suffix_list.dat" target="_blank" rel="noopener">public suffix</a> and thus <a href="https://mailarchive.ietf.org/arch/msg/http-state/TPAIg769WRpZsQVkKOCFpQNqFmE" target="_blank" rel="noopener">ignored by the browser</a>.</li>
 <li>Adding <code>allowHeaders</code> and <code>exposeHeaders</code> to the <code>cors options</code> on the server, with the following value: <code>[&#39;cookie&#39;, &#39;set-cookie&#39;]</code>;</li>
-<li>Deploying both BE and FE to heroku…<br>? maybe backend.heroku.com and frontend.heroku.com are on the “same domain”?<br>–&gt; Yes. but diferent sub-domains =&gt; cookie still blocked.</li>
 </ol>
-<h3 id="A-possible-sollution-would-be…"><a href="#A-possible-sollution-would-be…" class="headerlink" title="A possible sollution would be…"></a>A possible sollution would be…</h3><p>… to go back to passing the token via header / body and to store it locally on the client side.<br>React seems to protect us against XSS (the vulnerability with storing the token locally).<br>But we are stubborn and really really want to use cookies. Hah.</p>
-<h3 id="So-our-solution-was-to…"><a href="#So-our-solution-was-to…" class="headerlink" title="So our solution was to…"></a>So our solution was to…</h3><p>… use a 3rd service as a reverse-proxy:</p>
-<ol>
+<h3 id="A-possible-sollution-would-be…-to-give-up-the-cookies-entirely"><a href="#A-possible-sollution-would-be…-to-give-up-the-cookies-entirely" class="headerlink" title="A possible sollution would be… to give up the cookies entirely :)"></a>A possible sollution would be… to give up the cookies entirely :)</h3><p>… and go back to passing the token via header / body and to store it locally on the client side.</p>
+<p>The <strong>new problem</strong> with this approach is that the app becomes <strong>vulnerable to <a href="https://www.owasp.org/index.php/Cross-site_Scripting_(XSS" target="_blank" rel="noopener">XSS</a></strong>, one of the most widespreads attacks.<br>HOWEVER… we might be ok, React <a href="https://reactjs.org/docs/introducing-jsx.html#jsx-prevents-injection-attacks" target="_blank" rel="noopener">seems to protects us against XSS</a>…<br>HOWEVER… <a href="https://stackoverflow.com/questions/33644499/what-does-it-mean-when-they-say-react-is-xss-protected/51852579#51852579" target="_blank" rel="noopener">not entirely</a>?</p>
+<p>And so we decided that are stubborn and really really want to use cookies. Hah.</p>
+<h3 id="The-final-solution-use-a-3rd-service-as-a-reverse-proxy"><a href="#The-final-solution-use-a-3rd-service-as-a-reverse-proxy" class="headerlink" title="The final solution: use a 3rd service as a reverse-proxy"></a>The final solution: use a 3rd service as a reverse-proxy</h3><ol>
 <li>Deploy client to <code>frontend.heroku.com</code>.</li>
 <li>Deploy server to <code>backend.heroku.com</code>.<br><em>N.B.</em> At this point, the cookies sent from the server to the client are blocked.<br>Issue reproduced.</li>
 <li>Use <a href="https://github.com/chimurai/http-proxy-middleware" target="_blank" rel="noopener">http proxy middleware</a> to create a reverse proxy (see code below).</li>
 <li>Deploy the proxy to <code>proxy.heroku.com</code>.</li>
-<li>The following changes need to be done to the existing workflow:<ul>
-<li>The browser will call the proxy (the proxy will redirect the calls to the client);</li>
+<li><p>The following changes need to be done to our services:</p>
+<ul>
 <li>The client code will use the proxy as a server (the proxy will also redirect calls to the server);</li>
-<li>The server code will accept the proxy as a client (e.g. for the <code>allow origin</code> cors options).</li>
+<li>The server code will accept the proxy as a client (e.g. for the <code>allow origin</code> cors options);</li>
+<li>The browser will call the proxy (the proxy will redirect the calls to the client).</li>
 </ul>
 </li>
 </ol>
 <p>Cookies are sent and life is beautiful again :).</p>
+<p>The code looks quite straight-forward, the middleware is quite easy to use:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">var</span> proxy = <span class="built_in">require</span>(<span class="string">'http-proxy-middleware'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> CLIENT_URL = <span class="string">'https://frontend-cookie.herokuapp.com'</span>;</span><br><span class="line"><span class="keyword">const</span> SERVER_URL = <span class="string">'https://backend-cookie.herokuapp.com'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> clientProxy = proxy(&#123;</span><br><span class="line">  target: CLIENT_URL,</span><br><span class="line">  changeOrigin: <span class="literal">true</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> serverProxy = proxy(&#123;</span><br><span class="line">  target: SERVER_URL,</span><br><span class="line">  changeOrigin: <span class="literal">true</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> app = express();</span><br><span class="line"></span><br><span class="line">app.use(<span class="string">'/home'</span>, clientProxy);</span><br><span class="line">app.use(<span class="string">'/maniest.json'</span>, clientProxy);</span><br><span class="line">app.use(<span class="string">'/static/*'</span>, clientProxy);</span><br><span class="line">app.use(<span class="string">'/sockjs-node/*'</span>, clientProxy);</span><br><span class="line"></span><br><span class="line">app.use(<span class="string">'/login'</span>, serverProxy);</span><br><span class="line">app.use(<span class="string">'/secret'</span>, serverProxy);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> server = app.listen(process.env.PORT || <span class="number">3002</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`Listening on port <span class="subst">$&#123;server.address().port&#125;</span>...`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <h3 id="Next-steps"><a href="#Next-steps" class="headerlink" title="Next steps"></a>Next steps</h3><ul>
 <li>Use the reverse proxy to enforce tls/ssl usage;</li>
 <li>Use nginx instead of node as a reverse proxy;<ul>
@@ -127,14 +131,12 @@
 <li><a href="https://nodejs.org/de/docs/guides/nodejs-docker-webapp/" target="_blank" rel="noopener">Dockerize node app</a></li>
 <li><a href="https://facebook.github.io/create-react-app/docs/deployment#heroku-https-wwwherokucom" target="_blank" rel="noopener">Deploy node app to heroku</a></li>
 <li><a href="https://dzone.com/articles/cookies-vs-tokens-the-definitive-guide" target="_blank" rel="noopener">Cookies vs tokens</a></li>
-<li><a href="https://reactjs.org/docs/introducing-jsx.html#jsx-prevents-injection-attacks" target="_blank" rel="noopener">React protects us against XSS</a> …</li>
-<li><a href="https://stackoverflow.com/questions/33644499/what-does-it-mean-when-they-say-react-is-xss-protected/51852579#51852579" target="_blank" rel="noopener">… but not completely</a></li>
 </ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw1okjw40000igh50daovnw5" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw5u2ano0000r3h5mpqnr8lj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cookie/">Cookie</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JWT/">JWT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/">Node</a></li></ul>
