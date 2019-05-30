@@ -7,18 +7,18 @@
   
   <title>How to secure a Node.js app | Scribbles of a nerd-wannabe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="There are a lot of sites that help us test the security level of our apps. Below are some steps to make a Node.js app score A+ on (most of?) them. SSL/TLS Add support for https, if not done automatica">
-<meta name="keywords" content="Node,SSL&#x2F;TLS,HTTPS">
+  <meta name="description" content="There are a lot of sites that help us test the security level of our apps. SOme examples include:  Mozilla observatory for an overview of the app security; SSL Labs for secure connection checks; Secur">
+<meta name="keywords" content="SSL&#x2F;TLS,HTTPS,Node">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How to secure a Node.js app">
 <meta property="og:url" content="https://i-bar.github.io/2019/05/30/secure-nodejs/index.html">
 <meta property="og:site_name" content="Scribbles of a nerd-wannabe">
-<meta property="og:description" content="There are a lot of sites that help us test the security level of our apps. Below are some steps to make a Node.js app score A+ on (most of?) them. SSL/TLS Add support for https, if not done automatica">
+<meta property="og:description" content="There are a lot of sites that help us test the security level of our apps. SOme examples include:  Mozilla observatory for an overview of the app security; SSL Labs for secure connection checks; Secur">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-30T03:28:44.503Z">
+<meta property="og:updated_time" content="2019-05-30T03:37:53.905Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="How to secure a Node.js app">
-<meta name="twitter:description" content="There are a lot of sites that help us test the security level of our apps. Below are some steps to make a Node.js app score A+ on (most of?) them. SSL/TLS Add support for https, if not done automatica">
+<meta name="twitter:description" content="There are a lot of sites that help us test the security level of our apps. SOme examples include:  Mozilla observatory for an overview of the app security; SSL Labs for secure connection checks; Secur">
   
     <link rel="alternate" href="/atom.xml" title="Scribbles of a nerd-wannabe" type="application/atom+xml">
   
@@ -87,7 +87,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>There are a lot of sites that help us test the security level of our apps. Below are some steps to make a Node.js app score <span style="color:blue"><strong>A+</strong></span> on (most of?) them.</p>
+        <p>There are a lot of sites that help us test the security level of our apps. SOme examples include:</p>
+<ul>
+<li><a href="https://observatory.mozilla.org" target="_blank" rel="noopener">Mozilla observatory</a> for an overview of the app security;</li>
+<li><a href="https://www.ssllabs.com" target="_blank" rel="noopener">SSL Labs</a> for secure connection checks;</li>
+<li><a href="https://securityheaders.com" target="_blank" rel="noopener">Security Headers</a> for secure headers checks.</li>
+</ul>
+<p>Below are some steps to make a Node.js app score <span style="color:green"><strong>A+</strong></span> on (most of?) them:</p>
 <h3 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL/TLS"></a>SSL/TLS</h3><ol>
 <li>Add support for <strong>https</strong>, if not done automatically by the deployment server.</li>
 <li><strong>Redirect</strong> all http to https.</li>
@@ -102,12 +108,18 @@
 <p>This can also be done with helmet.</p>
 <p>The final code looks something like this:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">const</span> helmet = <span class="built_in">require</span>(<span class="string">'helmet'</span>);</span><br><span class="line"><span class="keyword">var</span> redirectToHTTPS = <span class="built_in">require</span>(<span class="string">'express-http-to-https'</span>).redirectToHTTPS;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = express();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Security middle layers:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Redirect to https</span></span><br><span class="line">app.use(redirectToHTTPS([], [], <span class="number">301</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// helmet adds *some* of the recommended headers: https://github.com/helmetjs/helmet</span></span><br><span class="line">app.use(helmet());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add CSP header to only allow using resources from our 'self'</span></span><br><span class="line">app.use(</span><br><span class="line">  helmet.contentSecurityPolicy(&#123;</span><br><span class="line">    directives: &#123;</span><br><span class="line">      defaultSrc: [<span class="string">"'self'"</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Do not set the referer header</span></span><br><span class="line">app.use(helmet.referrerPolicy(&#123; <span class="attr">policy</span>: <span class="string">'no-referrer'</span> &#125;));</span><br></pre></td></tr></table></figure>
+<h3 id="Secure-cookies"><a href="#Secure-cookies" class="headerlink" title="Secure cookies"></a>Secure cookies</h3><ul>
+<li>Mark all cookies as <code>secure</code>, so that they are only sent via https;</li>
+<li>Mark all cookies as <code>httpOnly</code> so that they cannot be accessed via JavaScript on the client side.</li>
+</ul>
+<p><code>Node</code> example with such a cookie:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">res</span><br><span class="line">  .cookie(<span class="string">'token'</span>, <span class="string">'some_secret_jwt_maybe'</span>, &#123;</span><br><span class="line">    httpOnly: <span class="literal">true</span>,</span><br><span class="line">    secure: <span class="literal">true</span>,</span><br><span class="line">  &#125;)</span><br><span class="line">  .json(<span class="string">'here, take a cookie'</span>);</span><br></pre></td></tr></table></figure>
 <p>Happy learning!</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/30/secure-nodejs/" data-id="cjwa3os6a0001yrh5y8xse8gz" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/30/secure-nodejs/" data-id="cjwa408j20005f0h5ogr7kmos" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/">Node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL-TLS/">SSL/TLS</a></li></ul>
