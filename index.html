@@ -62,6 +62,60 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-secure-nodejs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/05/30/secure-nodejs/" class="article-date">
+  <time datetime="2019-05-30T08:14:30.000Z" itemprop="datePublished">2019-05-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/30/secure-nodejs/">How to secure a Node.js app</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>There are a lot of sites that help us test the security level of our apps. Below are some steps to make a Node.js app score <span style="color:blue"><strong>A+</strong></span> on (most of?) them.</p>
+<h3 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL/TLS"></a>SSL/TLS</h3><ol>
+<li>Add support for <strong>https</strong>, if not done automatically by the deployment server.</li>
+<li><strong>Redirect</strong> all http to https.</li>
+</ol>
+<p>Please see <a href="https://i-bar.github.io/2019/05/14/http-how-to/">this entry</a> for <code>node</code> instructions.</p>
+<h3 id="Secure-Headers"><a href="#Secure-Headers" class="headerlink" title="Secure Headers"></a>Secure Headers</h3><p><a href="https://helmetjs.github.io/docs/" target="_blank" rel="noopener">Helmet</a> does a wonderful job with adding the most obvious headers.</p>
+<p>However, some of the headers need to be added manually:</p>
+<ul>
+<li>The <a href="https://infosec.mozilla.org/guidelines/web_security#referrer-policy" target="_blank" rel="noopener">referrer-policy header</a></li>
+<li>The <a href="https://infosec.mozilla.org/guidelines/web_security#referrer-policy" target="_blank" rel="noopener">content-security-policy header</a></li>
+</ul>
+<p>This can also be done with helmet.</p>
+<p>The final code looks something like this:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">const</span> helmet = <span class="built_in">require</span>(<span class="string">'helmet'</span>);</span><br><span class="line"><span class="keyword">var</span> redirectToHTTPS = <span class="built_in">require</span>(<span class="string">'express-http-to-https'</span>).redirectToHTTPS;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = express();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Security middle layers:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Redirect to https</span></span><br><span class="line">app.use(redirectToHTTPS([], [], <span class="number">301</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// helmet adds *some* of the recommended headers: https://github.com/helmetjs/helmet</span></span><br><span class="line">app.use(helmet());</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add CSP header to only allow using resources from our 'self'</span></span><br><span class="line">app.use(</span><br><span class="line">  helmet.contentSecurityPolicy(&#123;</span><br><span class="line">    directives: &#123;</span><br><span class="line">      defaultSrc: [<span class="string">"'self'"</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Do not set the referer header</span></span><br><span class="line">app.use(helmet.referrerPolicy(&#123; <span class="attr">policy</span>: <span class="string">'no-referrer'</span> &#125;));</span><br></pre></td></tr></table></figure>
+<p>Happy learning!</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://i-bar.github.io/2019/05/30/secure-nodejs/" data-id="cjwa3os6a0001yrh5y8xse8gz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/">Node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL-TLS/">SSL/TLS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-gcp-journey" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/05/23/gcp-journey/" class="article-date">
@@ -131,7 +185,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="cjw5u2ant0001r3h5moc35eif" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="cjwa3os6u000eyrh51qndn27p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GCP/">GCP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/">Serverless</a></li></ul>
@@ -143,9 +197,9 @@
 
 
   
-    <article id="post-http-how-to" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-https-how-to" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/05/14/http-how-to/" class="article-date">
+    <a href="/2019/05/14/https-how-to/" class="article-date">
   <time datetime="2019-05-14T08:14:30.000Z" itemprop="datePublished">2019-05-14</time>
 </a>
     
@@ -157,7 +211,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/14/http-how-to/">How to secure the transport layer</a>
+      <a class="article-title" href="/2019/05/14/https-how-to/">How to secure the transport layer</a>
     </h1>
   
 
@@ -254,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/14/http-how-to/" data-id="cjw5u2ao4000cr3h5avcjhts1" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/14/https-how-to/" data-id="cjwa3os6w000fyrh54pf1dqta" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/">Node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS-SSL/">TLS/SSL</a></li></ul>
@@ -337,7 +391,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjw5u2ano0000r3h5mpqnr8lj" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="cjwa3os650000yrh5lkfy8dfw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cookie/">Cookie</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JWT/">JWT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/">Node</a></li></ul>
@@ -362,7 +416,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cookie/">Cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GCP/">GCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JWT/">JWT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/">Node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Serverless/">Serverless</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS-SSL/">TLS/SSL</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cookie/">Cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GCP/">GCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JWT/">JWT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/">Node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-TLS/">SSL/TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Serverless/">Serverless</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS-SSL/">TLS/SSL</a></li></ul>
     </div>
   </div>
 
@@ -372,7 +426,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Cookie/" style="font-size: 10px;">Cookie</a> <a href="/tags/GCP/" style="font-size: 10px;">GCP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/JWT/" style="font-size: 10px;">JWT</a> <a href="/tags/Node/" style="font-size: 20px;">Node</a> <a href="/tags/Serverless/" style="font-size: 10px;">Serverless</a> <a href="/tags/TLS-SSL/" style="font-size: 10px;">TLS/SSL</a>
+      <a href="/tags/Cookie/" style="font-size: 10px;">Cookie</a> <a href="/tags/GCP/" style="font-size: 10px;">GCP</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/JWT/" style="font-size: 10px;">JWT</a> <a href="/tags/Node/" style="font-size: 20px;">Node</a> <a href="/tags/SSL-TLS/" style="font-size: 10px;">SSL/TLS</a> <a href="/tags/Serverless/" style="font-size: 10px;">Serverless</a> <a href="/tags/TLS-SSL/" style="font-size: 10px;">TLS/SSL</a>
     </div>
   </div>
 
@@ -394,11 +448,15 @@
       <ul>
         
           <li>
+            <a href="/2019/05/30/secure-nodejs/">How to secure a Node.js app</a>
+          </li>
+        
+          <li>
             <a href="/2019/05/23/gcp-journey/">Serverless with GCP - impressions</a>
           </li>
         
           <li>
-            <a href="/2019/05/14/http-how-to/">How to secure the transport layer</a>
+            <a href="/2019/05/14/https-how-to/">How to secure the transport layer</a>
           </li>
         
           <li>
