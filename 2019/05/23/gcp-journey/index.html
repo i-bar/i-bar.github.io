@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.8.0">
+<head>
   <meta charset="utf-8">
   
 
@@ -11,16 +11,14 @@
 <meta name="keywords" content="GCP,Serverless">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Serverless with GCP - impressions">
-<meta property="og:url" content="https://i-bar.github.io/2019/05/23/gcp-journey/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;i-bar.github.io&#x2F;2019&#x2F;05&#x2F;23&#x2F;gcp-journey&#x2F;index.html">
 <meta property="og:site_name" content="Scribbles of a nerd-wannabe">
 <meta property="og:description" content="This entry collects the steps and thoughts for building a serverless application with Google Cloud Platform services. The intention was to build a project with an architecture similar to the following">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://cdn.patricktriest.com/blog/images/posts/cheap-web-hosting/serverless.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;cdn.patricktriest.com&#x2F;blog&#x2F;images&#x2F;posts&#x2F;cheap-web-hosting&#x2F;serverless.png">
 <meta property="og:updated_time" content="2019-05-27T03:15:24.326Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Serverless with GCP - impressions">
-<meta name="twitter:description" content="This entry collects the steps and thoughts for building a serverless application with Google Cloud Platform services. The intention was to build a project with an architecture similar to the following">
-<meta name="twitter:image" content="https://cdn.patricktriest.com/blog/images/posts/cheap-web-hosting/serverless.png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;cdn.patricktriest.com&#x2F;blog&#x2F;images&#x2F;posts&#x2F;cheap-web-hosting&#x2F;serverless.png">
   
     <link rel="alternate" href="/atom.xml" title="Scribbles of a nerd-wannabe" type="application/atom+xml">
   
@@ -32,7 +30,7 @@
   
   <link rel="stylesheet" href="/css/style.css">
 </head>
-</html>
+
 <body>
   <div id="container">
     <div id="wrap">
@@ -105,8 +103,10 @@
 </ul>
 <p>The <code>node code</code> used to <strong>add new data</strong> to the database:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'dotenv'</span>).config();</span><br><span class="line"><span class="keyword">const</span> Firestore = <span class="built_in">require</span>(<span class="string">'@google-cloud/firestore'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = <span class="keyword">new</span> Firestore(&#123;</span><br><span class="line">  projectId: <span class="string">'hello-world-ib'</span>,</span><br><span class="line">  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> spiDoc = db.collection(<span class="string">'volops'</span>).doc(<span class="string">'cop'</span>);</span><br><span class="line"><span class="keyword">var</span> setCopii = spiDoc.set(&#123;</span><br><span class="line">  name: <span class="string">'Copii'</span>,</span><br><span class="line">  desc: <span class="string">'Descriere mare'</span>,</span><br><span class="line">  address: <span class="string">'adresa'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> batDoc = db.collection(<span class="string">'volops'</span>).doc(<span class="string">'bat'</span>);</span><br><span class="line"><span class="keyword">var</span> setBatrani = batDoc.set(&#123;</span><br><span class="line">  name: <span class="string">'Batrani'</span>,</span><br><span class="line">  desc: <span class="string">'Descriere mare batrani'</span>,</span><br><span class="line">  address: <span class="string">'adresa batrani'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.all([setCopii, setBatrani]);</span><br></pre></td></tr></table></figure>
+
 <p>The <code>node code</code> used to <strong>print the data</strong> in the database:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'dotenv'</span>).config();</span><br><span class="line"><span class="keyword">const</span> Firestore = <span class="built_in">require</span>(<span class="string">'@google-cloud/firestore'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = <span class="keyword">new</span> Firestore(&#123;</span><br><span class="line">  projectId: <span class="string">'hello-world-ib'</span>,</span><br><span class="line">  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">db.collection(<span class="string">'volops'</span>)</span><br><span class="line">  .get()</span><br><span class="line">  .then(<span class="function"><span class="params">snapshot</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> array = [];</span><br><span class="line">    snapshot.forEach(<span class="function"><span class="params">doc</span> =&gt;</span> &#123;</span><br><span class="line">      array.push(&#123;</span><br><span class="line">        doc: doc.id,</span><br><span class="line">        data: doc.data(),</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="built_in">console</span>.log(doc.id, <span class="string">' =&gt; '</span>, doc.data());</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'collection: '</span>, array);</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function"><span class="params">err</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'err: '</span>, err));</span><br></pre></td></tr></table></figure>
+
 <h3 id="GC-Serverless-Functions-boo"><a href="#GC-Serverless-Functions-boo" class="headerlink" title="GC Serverless: Functions (boo?)"></a>GC Serverless: <strong>Functions</strong> (boo?)</h3><p><em>“Google Cloud <strong>Functions</strong> is a lightweight compute solution for developers to create single-purpose, stand-alone functions that respond to Cloud events without the need to manage a server or runtime environment.”</em> (<a href="https://cloud.google.com/functions/docs/" target="_blank" rel="noopener">GCP Functions docs</a>)</p>
 <p>There are two ways to create a Function:</p>
 <ol>
@@ -115,9 +115,12 @@
 </ol>
 <!-- <details>
 <summary>Click to expand the `node code` for a Function that **responds to GET requests** and returns the data in the Firestore db previously created.</summary> -->
+
 <p>The <code>node code</code> for a Function that <strong>responds to GET requests</strong> and returns the data in the Firestore db previously created:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'dotenv'</span>).config();</span><br><span class="line"><span class="keyword">const</span> Firestore = <span class="built_in">require</span>(<span class="string">'@google-cloud/firestore'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = <span class="keyword">new</span> Firestore(&#123;</span><br><span class="line">  projectId: <span class="string">'hello-world-ib'</span>,</span><br><span class="line">  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">db.collection(<span class="string">'volops'</span>)</span><br><span class="line">  .get()</span><br><span class="line">  .then(<span class="function"><span class="params">snapshot</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> array = [];</span><br><span class="line">    snapshot.forEach(<span class="function"><span class="params">doc</span> =&gt;</span> &#123;</span><br><span class="line">      array.push(&#123;</span><br><span class="line">        doc: doc.id,</span><br><span class="line">        data: doc.data(),</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="built_in">console</span>.log(doc.id, <span class="string">' =&gt; '</span>, doc.data());</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'collection: '</span>, array);</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function"><span class="params">err</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'err: '</span>, err));</span><br></pre></td></tr></table></figure>
+
 <!-- </details> -->
+
 <p><strong>However… thumbs down for the billing</strong>: Have to enable billing to use them for free?! Whaaa :(…</p>
 <h3 id="GC-API-Gateway-Endpoints-boo"><a href="#GC-API-Gateway-Endpoints-boo" class="headerlink" title="GC API Gateway: Endpoints (boo!)"></a>GC API Gateway: <strong>Endpoints</strong> (boo!)</h3><p><em>“<strong>Endpoints</strong> is an API management system that helps you secure, monitor, analyze, and set quotas on your APIs using the same infrastructure Google uses for its own APIs.”</em> (<a href="https://cloud.google.com/endpoints/docs/" target="_blank" rel="noopener">GCP Endpoints docs</a>)</p>
 <p>The plan was to configure the Endpoints as an API gateway, a <strong>single point of entry</strong> for the app that would redirect calls to the right Function.</p>
@@ -136,10 +139,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="cjwlkbpfn0000iqh561rl8q85" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="ck2pu1xko0000l9h52wf45z3u" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GCP/">GCP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/">Serverless</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GCP/" rel="tag">GCP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/" rel="tag">Serverless</a></li></ul>
 
     </footer>
   </div>
@@ -178,7 +181,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cookie/">Cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GCP/">GCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Headers/">Headers</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JWT/">JWT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/">Node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-TLS/">SSL/TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Serverless/">Serverless</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS-SSL/">TLS/SSL</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cookie/" rel="tag">Cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GCP/" rel="tag">GCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Headers/" rel="tag">Headers</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JWT/" rel="tag">JWT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node/" rel="tag">Node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-TLS/" rel="tag">SSL/TLS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Serverless/" rel="tag">Serverless</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TLS-SSL/" rel="tag">TLS/SSL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/npx/" rel="tag">npx</a></li></ul>
     </div>
   </div>
 
@@ -188,7 +191,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Cookie/" style="font-size: 10px;">Cookie</a> <a href="/tags/GCP/" style="font-size: 10px;">GCP</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/Headers/" style="font-size: 10px;">Headers</a> <a href="/tags/JWT/" style="font-size: 10px;">JWT</a> <a href="/tags/Node/" style="font-size: 20px;">Node</a> <a href="/tags/SSL-TLS/" style="font-size: 10px;">SSL/TLS</a> <a href="/tags/Serverless/" style="font-size: 10px;">Serverless</a> <a href="/tags/TLS-SSL/" style="font-size: 10px;">TLS/SSL</a>
+      <a href="/tags/Cookie/" style="font-size: 10px;">Cookie</a> <a href="/tags/GCP/" style="font-size: 10px;">GCP</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/Headers/" style="font-size: 10px;">Headers</a> <a href="/tags/JWT/" style="font-size: 10px;">JWT</a> <a href="/tags/Node/" style="font-size: 20px;">Node</a> <a href="/tags/SSL-TLS/" style="font-size: 10px;">SSL/TLS</a> <a href="/tags/Serverless/" style="font-size: 10px;">Serverless</a> <a href="/tags/TLS-SSL/" style="font-size: 10px;">TLS/SSL</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/npm/" style="font-size: 10px;">npm</a> <a href="/tags/npx/" style="font-size: 10px;">npx</a>
     </div>
   </div>
 
@@ -197,7 +200,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li></ul>
     </div>
   </div>
 
@@ -208,6 +211,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/11/08/publish-npx/">Steps to publish an npm package</a>
+          </li>
         
           <li>
             <a href="/2019/05/30/secure-nodejs/">How to secure a Node.js app</a>
