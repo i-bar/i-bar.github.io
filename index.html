@@ -84,15 +84,15 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>The purpose of this entry is to provide very straight-forward steps that should be followed in order to publish an npm executable package (npx).</p>
-<p>For demonstration pusposes, we will publish a very basic package that prompts for a user name and greets the user. It would be used like this:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">✗ npx npm-says-hello</span><br><span class="line">npx: installed 1 <span class="keyword">in</span> 3.068s</span><br><span class="line">Hey, what<span class="string">'s your name?</span></span><br><span class="line"><span class="string">Santa</span></span><br><span class="line"><span class="string">hello, Santa</span></span><br></pre></td></tr></table></figure>
+<p>For demonstration pusposes, we will publish a very basic package, <code>npm-says-hello</code>, that prompts for a user name and greets the user. It would be used like this:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">✗ npx npm-says-hello</span><br><span class="line">npx: installed 1 <span class="keyword">in</span> 3.068s</span><br><span class="line">Hey, what\<span class="string">'s your name?</span></span><br><span class="line"><span class="string">Santa</span></span><br><span class="line"><span class="string">hello, Santa</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h3><ul>
 <li>You should have an <strong>npm account</strong>.<br>If you don’t, create one here: <a href="https://www.npmjs.com" target="_blank" rel="noopener">https://www.npmjs.com</a></li>
-<li>The package can only be published if it has a corresponding git remote repository. This is why it’s better to <strong>run all the following commands inside a new, empty repository</strong>. Create a new repository and give it the name you wish to give to the npm package. In our examples, we will use <code>npm-says-hello</code> for the package name.</li>
+<li>The package can only be published if it has a corresponding git remote repository. This is why it’s better to <strong>run all the following commands inside a new, empty repository</strong>.<br>Create a new repository and give it the name you wish to give to the npm package. In our examples, we will use <code>npm-says-hello</code> for the package &amp; repository name.</li>
 </ul>
 <h3 id="Create-the-npm-package"><a href="#Create-the-npm-package" class="headerlink" title="Create the npm package"></a>Create the npm package</h3><p>Inside the repository root folder, run the following command:<br><code>✗ npm init</code><br>This will create a <code>package.json</code> file. Just accept the defaults.</p>
-<p>Congratulations, the package is now ready to be published :). It doesn’t do anything but well, here it is. The next “bonus” sections add some functionality to it, but you can also skip to the “publish” section directly.</p>
+<p>Commit and push your changes and congratulations, the package is now ready to be published :).<br>It doesn’t do anything but well, here it is. The next “bonus” sections add some functionality to it, but you can also skip to the “publish” section directly.</p>
 <h3 id="Bonus-1-add-some-basic-functionality"><a href="#Bonus-1-add-some-basic-functionality" class="headerlink" title="Bonus 1: add some basic functionality"></a>Bonus 1: add some basic functionality</h3><p>Let’s add a shell file that greets us so that when we’ll run this package, npm will say “hi”.</p>
 <p>Add a <code>sayhello.sh</code> file in the same location as <code>package.json</code>. You can paste the following code inside, what it does is verify if the program was given an argument and if not, request for one. Then it greets the given name.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME=<span class="variable">$1</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -eq 0 ] ; <span class="keyword">then</span> <span class="built_in">echo</span> <span class="string">"Hey, what's your name? "</span>; <span class="built_in">read</span> NAME ; <span class="keyword">fi</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"hello, <span class="variable">$NAME</span>"</span></span><br></pre></td></tr></table></figure>
@@ -101,7 +101,7 @@
 <p>Your <code>package.json</code> should now look something like the following:<br>(with “npm-says-hello” replaced by you folder name)</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"npm-says-hello"</span>,</span><br><span class="line">  <span class="attr">"version"</span>: <span class="string">"1.0.0"</span>,</span><br><span class="line">  <span class="attr">"description"</span>: <span class="string">""</span>,</span><br><span class="line">  <span class="attr">"main"</span>: <span class="string">"index.js"</span>,</span><br><span class="line">  <span class="attr">"bin"</span>: <span class="string">"sayhello.sh"</span>,</span><br><span class="line">  <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"test"</span>: <span class="string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"repository"</span>: &#123;</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"git"</span>,</span><br><span class="line">    <span class="attr">"url"</span>: <span class="string">"git+https://github.com/i-bar/npm-says-hello.git"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"author"</span>: <span class="string">"i-bar"</span>,</span><br><span class="line">  <span class="attr">"license"</span>: <span class="string">"ISC"</span>,</span><br><span class="line">  <span class="attr">"bugs"</span>: &#123;</span><br><span class="line">    <span class="attr">"url"</span>: <span class="string">"https://github.com/i-bar/npm-says-hello/issues"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"homepage"</span>: <span class="string">"https://github.com/i-bar/npm-says-hello#readme"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Bonus-2-add-a-brief-description"><a href="#Bonus-2-add-a-brief-description" class="headerlink" title="Bonus 2: add a brief description"></a>Bonus 2: add a brief description</h3><p>We can also add a <code>README.md</code> file to get a nice package description. Add in again in the project root, i.e. the same location where the package.json was created.<br>We can add a few lines to it:</p>
+<h3 id="Bonus-2-add-a-brief-description"><a href="#Bonus-2-add-a-brief-description" class="headerlink" title="Bonus 2: add a brief description"></a>Bonus 2: add a brief description</h3><p>We can also add a <code>README.md</code> file to get a nice package description. Add it again in the project root (the same location where the package.json was created).<br>We can add a few lines to it:</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## npm says hello</span></span><br><span class="line"><span class="section">### How to use</span></span><br><span class="line">In bash:</span><br><span class="line"><span class="code">`npx npm-says-hello`</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="Test-the-package-locally"><a href="#Test-the-package-locally" class="headerlink" title="Test the package locally"></a>Test the package locally</h3><p>Npm provides a means to pack and test our changes locally. These are the steps to do this:</p>
@@ -118,7 +118,7 @@
 <p>If the command is successful, the package should be available at <a href="https://www.npmjs.com/package/npm-says-hello" target="_blank" rel="noopener">https://www.npmjs.com/package/npm-says-hello</a>.<br>To test if it works, we can run <code>✗ npx npm-says-hello</code> and we should get the same output as when we ran it locally.</p>
 <h3 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h3><p>The publish command will fail in one of the following cases:</p>
 <ul>
-<li>We haven’t logged into npm, case in which all we need to do is run npm login;</li>
+<li>We haven’t logged into npm, case in which all we need to do is run <code>npm login</code>;</li>
 <li>We are not running the command from within a remote repository.</li>
 </ul>
 <h3 id="Important-notice-about-removing-a-package-from-the-npm-registry"><a href="#Important-notice-about-removing-a-package-from-the-npm-registry" class="headerlink" title="Important notice! about removing a package from the npm registry"></a>Important notice! about removing a package from the npm registry</h3><p>If you are just creating this package as a test, <strong>do not forget to unpublish it within the first 72 hours</strong>, otherwise you will have to write to the npm team and give good reasons why you want to remove it.</p>
@@ -128,7 +128,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/11/08/publish-npx/" data-id="ck2pu1xkz0003l9h5h9a0gbzy" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/11/08/publish-npx/" data-id="ck349khon0000o3h59xnq7cgf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npx/" rel="tag">npx</a></li></ul>
@@ -196,7 +196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/30/secure-nodejs/" data-id="ck2pu1xle000kl9h5f5li4dxl" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/30/secure-nodejs/" data-id="ck349khpj000jo3h59nfchh0m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Headers/" rel="tag">Headers</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/" rel="tag">Node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL-TLS/" rel="tag">SSL/TLS</a></li></ul>
@@ -282,7 +282,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="ck2pu1xko0000l9h52wf45z3u" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/23/gcp-journey/" data-id="ck349khoy0003o3h589gb4lle" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GCP/" rel="tag">GCP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/" rel="tag">Serverless</a></li></ul>
@@ -411,7 +411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/14/https-how-to/" data-id="ck2pu1xld000jl9h56zx8dn8t" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/14/https-how-to/" data-id="ck349khpm000ro3h5aglfgnf8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/" rel="tag">Node</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS-SSL/" rel="tag">TLS/SSL</a></li></ul>
@@ -499,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="ck2pu1xkv0001l9h5dqcwhrcd" class="article-share-link">Share</a>
+      <a data-url="https://i-bar.github.io/2019/05/10/cookie-jwt-with-reverse-proxy-md/" data-id="ck349khou0001o3h51k76atlz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cookie/" rel="tag">Cookie</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JWT/" rel="tag">JWT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Node/" rel="tag">Node</a></li></ul>
